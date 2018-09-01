@@ -9,8 +9,10 @@ def drawPixelMatrix(surface, pixelMatrix):
     
     for row in xrange(0, numberOfRows):
         for col in xrange(0, numberOfColumns):
-            surface.fill(pixelMatrix[row][col], 
-                    (col*pxSideLen, row*pxSideLen, pxSideLen, pxSideLen))
+            surface.fill(
+                    pixelMatrix[row][col], 
+                    (col*pxSideLen, row*pxSideLen, pxSideLen, pxSideLen)
+            )
                     
     return surface
     
