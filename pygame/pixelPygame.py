@@ -1,3 +1,7 @@
+# Prerequisities: 
+#     - Pygame needs to already been initialized
+#     - Every row in pixelMatrix needs to have the same number of columns
+#     - Every cell in pixelMatrix needs to be a RGB tuple
 def drawPixelMatrix(surface, pixelMatrix):
     numberOfRows = len(pixelMatrix)
     numberOfColumns = len(pixelMatrix[0])
