@@ -60,11 +60,11 @@ def drawLine(windowSurface, color, startPos, endPos):
     slope =  float(endPos[1] - startPos[1]) / (endPos[0] - startPos[0])
 
     if slope < 1:
-        for dx in xrange(endPos[0] - startPos[0] + 1):
+        for dx in range(endPos[0] - startPos[0] + 1):
             dy = int(round(dx * slope))
             pixelArray[startPos[0] + dx][startPos[1] + dy] = WHITE
     else:
-        for dy in xrange(endPos[1] - startPos[1] + 1):
+        for dy in range(endPos[1] - startPos[1] + 1):
             if slope == 0:
                 dx = 0
             else:

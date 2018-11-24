@@ -11,8 +11,8 @@ def drawPixelMatrix(surface, pixelMatrix):
     
     pxSideLen = min(maxPixelHeight, maxPixelWidth)
     
-    for row in xrange(0, numberOfRows):
-        for col in xrange(0, numberOfColumns):
+    for row in range(0, numberOfRows):
+        for col in range(0, numberOfColumns):
             surface.fill(
                     pixelMatrix[row][col], 
                     (col*pxSideLen, row*pxSideLen, pxSideLen, pxSideLen)
