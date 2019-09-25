@@ -1,13 +1,16 @@
 #!/usr/bin/python
 import random
 
-random.seed()
-
 def main():
-    # d20AdvEmp(100000)
+    random.seed()
+
+    d20AdvEmp(100)
+    d20AdvEmp(1000)
+    d20AdvEmp(10000)
+    d20AdvEmp(100000)
     # d20AdvThe()
     # emp3d6Adv(100000)
-    the3d6Adv()
+    # the3d6Adv()
     
 def emp3d6Adv(sets):
     reg = [0]*19
