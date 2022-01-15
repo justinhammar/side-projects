@@ -1,6 +1,6 @@
 import pygame, sys
 from pygame.locals import *
-from pixelPygame import drawPixelMatrix
+from pixelPygame import draw_pixel_matrix
 
 
 class Color():
@@ -30,7 +30,7 @@ class PixelBalls():
         pixelMatrix = [[Color.GREEN, Color.RED, Color.BLUE, Color.WHITE],
                            [Color.RED, Color.WHITE, Color.RED, Color.GREEN]]
                             
-        drawPixelMatrix(surface, pixelMatrix)
+        draw_pixel_matrix(surface, pixelMatrix)
 
         pygame.display.update()
 

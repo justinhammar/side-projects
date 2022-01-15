@@ -1,16 +1,25 @@
-import pygame, sys, random, math, queue, time
+import random
+import math
+import queue
+
 import numpy as np
-from pygame.locals import *
-from pixelPygame import drawPixelMatrix
+
+from pixelPygame import PixelPygame, PixelMatrix
 
 
-class Color:
+class MyColor:
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
+    FOREST_GREEN = (31, 93, 65)
+    SEA_GREEN = (81, 135, 89)
+    DARK_KHAKI = (152, 171, 99)
     BLUE = (0, 0, 255)
-    
+    ROYAL_BLUE = (75.0, 87.0, 215.0)
+    LIGHT_STEEL_BLUE = (159, 193, 242)
+    CORN_FLOWER_BLUE = (118, 142, 234)
+
     
 class Point:
     def __init__(self, x=0, y=0):
@@ -52,77 +61,30 @@ class Point:
         
     def isSameAsOrNextTo(self, point):
         return abs(self.x - point.x) <= 1 and abs(self.y - point.y) <= 1
-        
-        
-class PixelMatrix:
-    def __init__(self, pixelMatrix):
-        self.matrix = pixelMatrix
-        
-        
-    def getWidth(self):
-        return len(self.matrix[0])
-        
-        
-    def getHeight(self):
-        return len(self.matrix)
-        
-        
-    def setPixelColor(self, point, color=Color.BLUE):
-        if point.x < 0 or point.y < 0:
-            return
     
-        try:
-            self.matrix[point.y][point.x] = color
-        except IndexError:
-            pass
-        
-    
-    def getPixelColor(self, point):
-        if point.x < 0 or point.y < 0:
-            return None
-    
-        try:
-            return self.matrix[point.y][point.x]
-        except IndexError:
-            return None
-    
-	
+
 class LakeProGen:
-    def __init__(self, pixelMatrix):
-        self.pixelMatrix = PixelMatrix(pixelMatrix)
-            
-    
-    def generateFractalLake(self):
-        #self.pixelMatrix.setPixelColor(Point(25, 25), Color.RED)
-        
+    def __init__(self, width, height):
+        self.pixel_matrix = PixelMatrix(width, height, MyColor.GREEN)
+
+    def generate_fractal_lake(self):
         # pick four corners with some randomness
-        centerWidth = self.pixelMatrix.getWidth() // 2
-        centerHeight = self.pixelMatrix.getHeight() // 2
-        centerPoint = Point(centerWidth, centerHeight)
-        a = centerWidth // 2
+        center_width = self.pixel_matrix.get_width() // 2
+        center_height = self.pixel_matrix.get_height() // 2
+        center_point = Point(center_width, center_height)
+        a = center_width // 2
         b = a * 3
-        randPositionFactor = centerWidth // 5
+        rand_position_factor = center_width // 5
         
-        point2 = self.randomPoint(Point(b, a), randPositionFactor)
-        point1 = self.randomPoint(Point(a, a), randPositionFactor)
-        point3 = self.randomPoint(Point(a, b), randPositionFactor)
-        point4 = self.randomPoint(Point(b, b), randPositionFactor)
-        
-        # x1 = a + random.randint(rand_min, rand_max)
-        # x2 = b + random.randint(rand_min, rand_max)
-        # x3 = a + random.randint(rand_min, rand_max)
-        # x4 = b + random.randint(rand_min, rand_max)
-        
-        # y1 = a + random.randint(rand_min, rand_max)
-        # y2 = a + random.randint(rand_min, rand_max)
-        # y3 = b + random.randint(rand_min, rand_max)
-        # y4 = b + random.randint(rand_min, rand_max)
-        
-        
-        self.pixelMatrix.setPixelColor(point1, Color.BLUE)
-        self.pixelMatrix.setPixelColor(point2, Color.BLUE)
-        self.pixelMatrix.setPixelColor(point3, Color.BLUE)
-        self.pixelMatrix.setPixelColor(point4, Color.BLUE)
+        point2 = self.randomPoint(Point(b, a), rand_position_factor)
+        point1 = self.randomPoint(Point(a, a), rand_position_factor)
+        point3 = self.randomPoint(Point(a, b), rand_position_factor)
+        point4 = self.randomPoint(Point(b, b), rand_position_factor)
+
+        self.pixel_matrix.set_pixel_color(point1, MyColor.BLUE)
+        self.pixel_matrix.set_pixel_color(point2, MyColor.BLUE)
+        self.pixel_matrix.set_pixel_color(point3, MyColor.BLUE)
+        self.pixel_matrix.set_pixel_color(point4, MyColor.BLUE)
         
         # recursively add midpoints along sides
         self.createFractalEdge(point1, point2)
@@ -130,9 +92,8 @@ class LakeProGen:
         self.createFractalEdge(point4, point3)
         self.createFractalEdge(point3, point1)
         
-        self.fillFromPoint(centerPoint, Color.BLUE)
-        
-        
+        self.fillFromPoint(center_point, MyColor.BLUE)
+
     def randomPoint(self, point, x, y=None, x_n=None, y_n=None):
         x = abs(x)
         if not y: 
@@ -147,9 +108,8 @@ class LakeProGen:
         new_point.y = point.y + random.randint(y_n, y)
         
         return new_point
-        
-        
-    def createFractalEdge(self, point1, point2, color=Color.BLUE):
+
+    def createFractalEdge(self, point1, point2, color=MyColor.BLUE):
         if point1.isSameAsOrNextTo(point2):
             return
     
@@ -165,112 +125,49 @@ class LakeProGen:
         point_mid.x = point_mid.x + random.randint(-x_skew_max, x_skew_max)
         point_mid.y = point_mid.y + random.randint(-y_skew_max, y_skew_max)
         
-        self.pixelMatrix.setPixelColor(point_mid, color)
+        self.pixel_matrix.set_pixel_color(point_mid, color)
         self.createFractalEdge(point1, point_mid, color)
         self.createFractalEdge(point_mid, point2, color)
-        
-        
+
     def randomRound(self, float):  
         if float.as_integer_ratio()[1] == 2:
             roundedAsFloat = math.floor(float + random.randint(0, 1))
             return int(roundedAsFloat)
 
         return int(np.rint(float))
-        
 
     def fillFromPoint(self, point, fillColor):
         pointQueue = queue.Queue()
         
-        oldColor = self.pixelMatrix.getPixelColor(point)
-        self.pixelMatrix.setPixelColor(point, fillColor)
+        oldColor = self.pixel_matrix.get_pixel_color(point)
+        self.pixel_matrix.set_pixel_color(point, fillColor)
         pointQueue.put(point)
         
         while not pointQueue.empty():
             point = pointQueue.get()
             for pt in point.getNeighborList():
                 if self.shouldBeFilled(pt, oldColor):
-                    self.pixelMatrix.setPixelColor(pt, fillColor)
+                    self.pixel_matrix.set_pixel_color(pt, fillColor)
                     pointQueue.put(pt)
-        
-        
+
     def shouldBeFilled(self, point, oldColor):
-        pointColor = self.pixelMatrix.getPixelColor(point)
+        pointColor = self.pixel_matrix.get_pixel_color(point)
         if pointColor == oldColor:
             return True
             
         return False
-    
-        '''pointColor = self.pixelMatrix.getPixelColor(point)
-        if pointColor == color or pointColor == None:
-            return
-            
-        self.pixelMatrix.setPixelColor(point, color)
-        
-        top_neighbor = Point(point.x, point.y+1)
-        bottom_neighbor = Point(point.x, point.y-1)
-        left_neighbor = Point(point.x-1, point.y)
-        right_neighbor = Point(point.x+1, point.y)
-        
-        self.fillFromPoint(top_neighbor, color)
-        self.fillFromPoint(bottom_neighbor, color)
-        self.fillFromPoint(left_neighbor, color)
-        self.fillFromPoint(right_neighbor, color)'''
-        
-        
-    '''def fillFromPoint(self, point, color):
-        pointColor = self.pixelMatrix.getPixelColor(point)
-        if pointColor == color or pointColor == None:
-            return
-            
-        self.pixelMatrix.setPixelColor(point, color)
-        
-        top_neighbor = Point(point.x, point.y+1)
-        bottom_neighbor = Point(point.x, point.y-1)
-        left_neighbor = Point(point.x-1, point.y)
-        right_neighbor = Point(point.x+1, point.y)
-        
-        self.fillFromPoint(top_neighbor, color)
-        self.fillFromPoint(bottom_neighbor, color)
-        self.fillFromPoint(left_neighbor, color)
-        self.fillFromPoint(right_neighbor, color)'''
-    
-    
+
 
 def main():
-    pygame.init()
-
-    surface = pygame.display.set_mode((500,500), 0, 32)
-    pygame.display.set_caption('Procedurally Generated Lake')
-    
-    #cls.advanceGameState(surface)   
-    while True:
-        t = time.process_time()
-        advanceGameState(surface)
-        print(time.process_time() - t, 's')
-        for times in range(0,20):
-            handlePygameEvents()
-            pygame.time.wait(100)
+    pixel_pygame = PixelPygame("Procedurally Generated Lake", 512, 512, 2.0)
+    pixel_pygame.start(advance_game_state)
 
 
-def advanceGameState(surface):
-    width, height = 250, 250
-    # switch to numpy ndarrays for better performance?
-    pixelMatrix = [[Color.GREEN for col in range(0, width)] 
-                    for row in range(0,height)]
-    lakeProGen = LakeProGen(pixelMatrix)
-    lakeProGen.generateFractalLake()
-                        
-    drawPixelMatrix(surface, lakeProGen.pixelMatrix.matrix)
-
-    pygame.display.update()
-    
-    
-def handlePygameEvents():
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
+def advance_game_state():
+    lake_pro_gen = LakeProGen(256, 256)
+    lake_pro_gen.generate_fractal_lake()
+    return lake_pro_gen.pixel_matrix.matrix
         
         
-# Beginning of Script
-main()    
+if __name__ == "__main__":
+    main()
