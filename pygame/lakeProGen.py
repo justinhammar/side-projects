@@ -68,6 +68,8 @@ class LakeProGen:
         self.pixel_matrix = PixelMatrix(width, height, MyColor.GREEN)
 
     def generate_fractal_lake(self):
+        self.pixel_matrix = PixelMatrix(self.pixel_matrix.get_width(), self.pixel_matrix.get_height(), MyColor.GREEN)
+
         # pick four corners with some randomness
         center_width = self.pixel_matrix.get_width() // 2
         center_height = self.pixel_matrix.get_height() // 2
@@ -157,17 +159,16 @@ class LakeProGen:
             
         return False
 
+    def advance_game_state(self):
+        self.generate_fractal_lake()
+        return self.pixel_matrix.matrix
+
 
 def main():
     pixel_pygame = PixelPygame("Procedurally Generated Lake", 512, 512, 2.0)
-    pixel_pygame.start(advance_game_state)
-
-
-def advance_game_state():
     lake_pro_gen = LakeProGen(256, 256)
-    lake_pro_gen.generate_fractal_lake()
-    return lake_pro_gen.pixel_matrix.matrix
-        
-        
+    pixel_pygame.start(lake_pro_gen)
+
+
 if __name__ == "__main__":
     main()

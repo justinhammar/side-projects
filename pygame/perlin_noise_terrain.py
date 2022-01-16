@@ -99,16 +99,15 @@ class PerlinNoiseTerrain:
         rand_val = random.random() * (2 * math.pi)
         return math.sin(rand_val), math.cos(rand_val)
 
+    def advance_game_state(self):
+        self.generate_terrain()
+        return self.pixel_matrix.matrix
+
 
 def main():
     pixel_pygame = PixelPygame("Procedurally Generated Terrain", 512, 512, 2.0)
-    pixel_pygame.start(advance_game_state)
-
-
-def advance_game_state():
-    perlin_noise_terrain = PerlinNoiseTerrain(512, 512)     # TODO do this only once
-    perlin_noise_terrain.generate_terrain()
-    return perlin_noise_terrain.pixel_matrix.matrix
+    perlin_noise_terrain = PerlinNoiseTerrain(512, 512)
+    pixel_pygame.start(perlin_noise_terrain)
 
 
 if __name__ == "__main__":

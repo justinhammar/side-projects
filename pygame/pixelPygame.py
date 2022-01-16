@@ -1,6 +1,7 @@
 import sys
 import time
 from collections.abc import Callable
+from typing import Any
 
 import pygame
 from pygame.locals import *
@@ -20,7 +21,10 @@ class PixelPygame:
         self.surface = pygame.display.set_mode((surface_width, surface_height), 0, 32)
         pygame.display.set_caption(window_title)
 
-    def start(self, advance_game_state: Callable):
+    def start(self, game_object: Any):
+        """
+        :param game_object: must have method called advance_game_state
+        """
         image_num = 0
         next_update_time = None
         is_frame_ready = False
@@ -28,7 +32,7 @@ class PixelPygame:
             if not is_frame_ready:
                 t = time.process_time()
 
-                pixel_matrix = advance_game_state()
+                pixel_matrix = game_object.advance_game_state()
                 self.draw_pixel_matrix(pixel_matrix)
                 is_frame_ready = True
 
